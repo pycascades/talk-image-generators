@@ -51,6 +51,7 @@ def get_talks():
         talktime = datetime.fromisoformat(blob["slot"]["start"]).strftime("%b %-d, %Y\n%-I:%M%p PST")
         speaker = blob["speakers"][0]
         talk = {
+            "code": blob["code"],
             "title": blob["title"],
             "name": speaker["name"],
             "time": talktime,
@@ -111,7 +112,7 @@ def make_placard(talk):
     inner_box = (x, y)
     # Put the profile pic in the image
     template.paste(pfpo, inner_box, mask=mask)
-    template.save(f"outputs/{name}", "PNG")
+    template.save(f"outputs/{name}.png", "PNG")
 
 
 if __name__ == "__main__":
@@ -131,6 +132,7 @@ TWITTER: {talk["twitter"]}
 TWEET:
 Looking forward to {at}'s talk, "{title}"? Sound off in the comments!
 #PyCascades
+https://pretalx.com/pycascades-2022/talk/{talk["code"]}/
 
 ALT:
 Talk promo picture for {name}'s talk at PyCascades 2022.

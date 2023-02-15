@@ -8,7 +8,10 @@ from datetime import datetime
 from io import BytesIO
 
 headers = {"Authorization": f"Token {os.environ.get('PRETALX_TOKEN')}"}
-twitter_question_id = 1153
+twitter_question_id = 1998
+event_slug = "pycascades-2023"
+year = "2023"
+template_image_path = "templates/talk-image-template-v2023.png"
 
 large_cutoff = ranges.Range(80, ranges.Inf)
 med_cutoff = ranges.Range(40, 80)
@@ -30,7 +33,7 @@ fonts = ranges.RangeDict({
 
 
 def get_twitter_handle(speaker):
-    speaker_data = requests.get(f"https://pretalx.com/api/events/pycascades-2022/speakers/{speaker['code']}",
+    speaker_data = requests.get(f"https://pretalx.com/api/events/{event_slug}/speakers/{speaker['code']}",
                                 headers=headers).json()
     handle = None
     for answer in speaker_data["answers"]:
@@ -43,7 +46,7 @@ def get_twitter_handle(speaker):
 def get_talks():
     # Announcements/panels
     exclude = {"MVLLML", "8YFUUC", "VVSFBR", "3C3BFP", "3HKZTJ",}
-    r = requests.get("https://pretalx.com/api/events/pycascades-2022/submissions/?state=confirmed", headers=headers)
+    r = requests.get(f"https://pretalx.com/api/events/{event_slug}/submissions/?state=confirmed", headers=headers)
     r.raise_for_status()
     data = [talk for talk in r.json()["results"] if talk["code"] not in exclude]
     talks = []
@@ -79,7 +82,7 @@ def make_placard(talk):
         spacing = "\n\n\n"
     text = title + spacing + talk["time"] + spacing + name
     text_font = ImageFont.truetype("fonts/Anonymous_Pro_B.ttf", size=fonts[len(text)])
-    template = Image.open("talk-image-template-v2.png")
+    template = Image.open(template_image_path)
     pyc_purple_color = (98, 60, 151)
     drawing = ImageDraw.Draw(template)
     drawing.text(xy=(30, 30),
@@ -126,18 +129,21 @@ if __name__ == "__main__":
         at = f"@{twitter}" if twitter else name
         title = talk["title"]
         time = talk["time"].replace("\n", " ")
+        if talk["pfp"] is None:
+            print(f"Skipping {name} - no profile pic!")
+            continue
         make_placard(talk)
         tweets += f"""
 TWITTER: {talk["twitter"]}
 TWEET:
 Looking forward to {at}'s talk, "{title}"? Sound off in the comments!
 #PyCascades
-https://pretalx.com/pycascades-2022/talk/{talk["code"]}/
+https://pretalx.com/{event_slug}/talk/{talk["code"]}/
 
 ALT:
-Talk promo picture for {name}'s talk at PyCascades 2022.
+Talk promo picture for {name}'s talk at PyCascades {year}.
 The PyCascades logo is in the top right.
-The URL "2022.pycascades.com" is in the bottom right.
+The URL "{year}.pycascades.com" is in the bottom right.
 A picture of {name} is in the center.
 The top left has the talk title: "{title}".
 Below that is the talk time, {time}.

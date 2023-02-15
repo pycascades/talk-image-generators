@@ -76,10 +76,18 @@ def make_placard(talk):
     title = make_title(talk)
     spacing = "\n\n"
     name = talk["name"]
+    original_name = name
     print(f"Working on {name}")
-    if title.startswith("Fifty shades"):
-        # Special contingency for one talk that had a short title and a long speaker name
-        spacing = "\n\n\n"
+    # Special contingencies for talks that have long speaker names
+    # if len(name) > 20 and len(title) <= 25:
+    #     spacing = "\n\n\n"
+    if len(name) > 21:
+        # Get the number of spaces to skip over
+        middle_space_count = (name.count(" ") // 2) + 1
+        # Split by spaces up until that ammount
+        split_by_space = name.split(" ", maxsplit=middle_space_count)
+        # Join all of the split spaces, add a newline in between, then add the rest of the string
+        name = " ".join(split_by_space[:middle_space_count]) + "\n" + split_by_space[-1]
     text = title + spacing + talk["time"] + spacing + name
     text_font = ImageFont.truetype("fonts/Anonymous_Pro_B.ttf", size=fonts[len(text)])
     template = Image.open(template_image_path)
@@ -115,7 +123,7 @@ def make_placard(talk):
     inner_box = (x, y)
     # Put the profile pic in the image
     template.paste(pfpo, inner_box, mask=mask)
-    template.save(f"outputs/{name}.png", "PNG")
+    template.save(f"outputs/{original_name}.png", "PNG")
 
 
 if __name__ == "__main__":

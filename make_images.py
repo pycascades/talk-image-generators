@@ -18,7 +18,7 @@ med_cutoff = ranges.Range(40, 80)
 small_cutoff = ranges.Range(0, 40)
 cutoffs = ranges.RangeDict({
     large_cutoff: 24,
-    med_cutoff: 19,
+    med_cutoff: 18,
     small_cutoff: 15,
 })
 

@@ -4,6 +4,7 @@ import ranges
 import requests
 import textwrap
 from PIL import Image, ImageFont, ImageDraw, ImageOps
+from pathlib import Path
 from datetime import datetime
 from io import BytesIO
 
@@ -52,7 +53,10 @@ def get_talks():
     talks = []
     for blob in data:
         talktime = datetime.fromisoformat(blob["slot"]["start"]).strftime("%b %-d, %Y\n%-I:%M%p PST")
-        speaker = blob["speakers"][0]
+        if not (speakers := blob["speakers"]):
+            print(f"Talk {blob['title']} did not have a speaker!")
+            continue
+        speaker = speakers[0]
         talk = {
             "code": blob["code"],
             "title": blob["title"],
@@ -128,6 +132,7 @@ def make_placard(talk):
 
 if __name__ == "__main__":
     print("Loading talks...")
+    (Path(__file__).parent / "outputs").mkdir(exist_ok=True)
     talks = get_talks()
     tweets = ""
     for talk in talks:

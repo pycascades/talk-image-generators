@@ -9,10 +9,10 @@ from datetime import datetime
 from io import BytesIO
 
 headers = {"Authorization": f"Token {os.environ.get('PRETALX_TOKEN')}"}
-twitter_question_id = 1998
-event_slug = "pycascades-2023"
-year = "2023"
-template_image_path = "templates/talk-image-template-v2023.png"
+twitter_question_id = 3134
+event_slug = "pycascades-2024"
+year = "2024"
+template_image_path = "templates/talk-image-template-v2024.png"
 
 large_cutoff = ranges.Range(80, ranges.Inf)
 med_cutoff = ranges.Range(40, 80)
@@ -46,7 +46,7 @@ def get_twitter_handle(speaker):
 
 def get_talks():
     # Announcements/panels
-    exclude = {"MVLLML", "8YFUUC", "VVSFBR", "3C3BFP", "3HKZTJ",}
+    exclude = {"JTLCM9", "9YY3LV", "NYMDG8", "WF87QB", "MFJXGK", "JUZEK7"}
     r = requests.get(f"https://pretalx.com/api/events/{event_slug}/submissions/?state=confirmed", headers=headers)
     r.raise_for_status()
     data = [talk for talk in r.json()["results"] if talk["code"] not in exclude]

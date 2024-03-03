@@ -74,6 +74,9 @@ def get_talks():
 def make_title(talk):
     title = talk["title"]
     cutoff = cutoffs[len(title)]
+    # Special contingency for talk with bad formatting
+    if talk["code"] == "QRB9D7":
+        cutoff = 16
     formatted = textwrap.wrap(title, width=cutoff)
     return "\n".join(formatted)
     

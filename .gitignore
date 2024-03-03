@@ -133,6 +133,3 @@ dmypy.json
 
 # Output files
 outputs/
-
-# Krita swap files
-*.kra~

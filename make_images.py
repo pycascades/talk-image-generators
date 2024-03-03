@@ -12,7 +12,9 @@ headers = {"Authorization": f"Token {os.environ.get('PRETALX_TOKEN')}"}
 twitter_question_id = 3134
 event_slug = "pycascades-2024"
 year = "2024"
-template_image_path = "templates/talk-image-template-v2024.png"
+wide_image_template_path = "templates/talk-image-template-v2024.png"
+square_image_template_path = "templates/talk-image-template-v2024-insta.png"
+
 
 large_cutoff = ranges.Range(80, ranges.Inf)
 med_cutoff = ranges.Range(40, 80)
@@ -76,12 +78,12 @@ def make_title(talk):
     return "\n".join(formatted)
     
 
-def make_placard(talk):
+def make_placard(talk, template_name, suffix: str = ""):
     title = make_title(talk)
     spacing = "\n\n"
     name = talk["name"]
     original_name = name
-    print(f"Working on {name}")
+    print(f"Working on {name}{suffix}")
     # Special contingencies for talks that have long speaker names
     # if len(name) > 20 and len(title) <= 25:
     #     spacing = "\n\n\n"
@@ -94,7 +96,7 @@ def make_placard(talk):
         name = " ".join(split_by_space[:middle_space_count]) + "\n" + split_by_space[-1]
     text = title + spacing + talk["time"] + spacing + name
     text_font = ImageFont.truetype("fonts/Anonymous_Pro_B.ttf", size=fonts[len(text)])
-    template = Image.open(template_image_path)
+    template = Image.open(template_name)
     pyc_purple_color = (98, 60, 151)
     drawing = ImageDraw.Draw(template)
     drawing.text(xy=(30, 30),
@@ -127,7 +129,7 @@ def make_placard(talk):
     inner_box = (x, y)
     # Put the profile pic in the image
     template.paste(pfpo, inner_box, mask=mask)
-    template.save(f"outputs/{original_name}.png", "PNG")
+    template.save(f"outputs/{original_name}{suffix}.png", "PNG")
 
 
 if __name__ == "__main__":
@@ -145,7 +147,8 @@ if __name__ == "__main__":
         if talk["pfp"] is None:
             print(f"Skipping {name} - no profile pic!")
             continue
-        make_placard(talk)
+        make_placard(talk, wide_image_template_path)
+        make_placard(talk, square_image_template_path, "-insta")
         tweets += f"""
 TWITTER: {talk["twitter"]}
 TWEET:

@@ -48,7 +48,7 @@ def get_twitter_handle(speaker):
 
 def get_talks():
     # Announcements/panels
-    exclude = {"JTLCM9", "9YY3LV", "NYMDG8", "WF87QB", "MFJXGK", "JUZEK7"}
+    exclude = {"JTLCM9", "9YY3LV", "NYMDG8", "WF87QB", "JUZEK7"}
     r = requests.get(f"https://pretalx.com/api/events/{event_slug}/submissions/?state=confirmed", headers=headers)
     r.raise_for_status()
     data = [talk for talk in r.json()["results"] if talk["code"] not in exclude]
@@ -58,16 +58,16 @@ def get_talks():
         if not (speakers := blob["speakers"]):
             print(f"Talk {blob['title']} did not have a speaker!")
             continue
-        speaker = speakers[0]
-        talk = {
-            "code": blob["code"],
-            "title": blob["title"],
-            "name": speaker["name"],
-            "time": talktime,
-            "pfp": speaker["avatar"],
-            "twitter": get_twitter_handle(speaker),
-        }
-        talks.append(talk)
+        for speaker in speakers:
+            talk = {
+                "code": blob["code"],
+                "title": blob["title"],
+                "name": speaker["name"],
+                "time": talktime,
+                "pfp": speaker["avatar"],
+                "twitter": get_twitter_handle(speaker),
+            }
+            talks.append(talk)
     return talks
 
 

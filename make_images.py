@@ -48,7 +48,7 @@ def get_twitter_handle(speaker):
 
 def get_talks():
     # Announcements/panels
-    exclude = {"ARGDGT"}
+    exclude = {}
     r = requests.get(f"https://pretalx.com/api/events/{event_slug}/submissions/?state=confirmed", headers=headers)
     r.raise_for_status()
     data = [talk for talk in r.json()["results"] if talk["code"] not in exclude]

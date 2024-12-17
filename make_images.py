@@ -10,10 +10,10 @@ from io import BytesIO
 
 headers = {"Authorization": f"Token {os.environ.get('PRETALX_TOKEN')}"}
 twitter_question_id = 3134
-event_slug = "pycascades-2024"
-year = "2024"
-wide_image_template_path = "templates/talk-image-template-v2024.png"
-square_image_template_path = "templates/talk-image-template-v2024-insta.png"
+year = "2025"
+event_slug = f"pycascades-{year}"
+wide_image_template_path = f"templates/talk-image-template-v{year}.png"
+square_image_template_path = f"templates/talk-image-template-v{year}-insta.png"
 
 
 large_cutoff = ranges.Range(80, ranges.Inf)
@@ -48,7 +48,7 @@ def get_twitter_handle(speaker):
 
 def get_talks():
     # Announcements/panels
-    exclude = {"JTLCM9", "9YY3LV", "NYMDG8", "WF87QB", "JUZEK7"}
+    exclude = {"ARGDGT"}
     r = requests.get(f"https://pretalx.com/api/events/{event_slug}/submissions/?state=confirmed", headers=headers)
     r.raise_for_status()
     data = [talk for talk in r.json()["results"] if talk["code"] not in exclude]
@@ -88,8 +88,11 @@ def make_placard(talk, template_name, suffix: str = ""):
     original_name = name
     print(f"Working on {name}{suffix}")
     # Special contingencies for talks that have long speaker names
-    # if len(name) > 20 and len(title) <= 25:
+    #if len(name) > 20 and len(title) <= 25:
     #     spacing = "\n\n\n"
+    # Special contingency for long name and short talk
+    if name.startswith("Vagrant"):
+        spacing = "\n\n\n"
     if len(name) > 21:
         # Get the number of spaces to skip over
         middle_space_count = (name.count(" ") // 2) + 1
@@ -112,7 +115,10 @@ def make_placard(talk, template_name, suffix: str = ""):
     # Add pfp
     size = (425, 425)
     pfp_data = BytesIO(requests.get(talk["pfp"]).content)
-    pfp = Image.open(pfp_data)
+    try:
+        pfp = Image.open(pfp_data)
+    except Exception as err:
+        raise ValueError(f"Error with file: {talk['pfp']}") from err
     # Resize, center, and crop
     # https://gist.github.com/sigilioso/2957026#gistcomment-1409714
     pfpo = ImageOps.fit(pfp, size)
